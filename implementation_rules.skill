@@ -1,0 +1,65 @@
+# Skill: Implementation Rules for Task Notebook App
+
+请按工程化方式实现，不要只堆在一个文件里。
+
+## 基本要求
+- 代码结构清晰
+- 组件拆分合理
+- 命名语义化
+- 状态管理清楚
+- 不要写无意义的重复代码
+
+## 推荐页面与组件
+建议拆分为：
+
+### 页面
+- HomePage / DashboardPage
+- HistoryPage
+- PlanDetailPage（可选）
+
+### 组件
+- PlanHeader
+- TaskList
+- TaskCard
+- TaskEditor
+- NoteEditor
+- CreateNextPlanPanel
+- ProgressSummary
+- EmptyState
+
+## 推荐状态管理
+最少需要管理以下状态：
+- 当前活跃计划 currentPlan
+- 当前计划事项 currentTasks
+- 历史计划列表 historyPlans
+- 是否允许创建下一天 canCreateNextPlan
+- 新事项输入表单状态
+- 便签编辑状态
+
+## 推荐方法命名
+- createPlanDay()
+- addTaskToPlan()
+- updateTaskStatus()
+- updateTaskNote()
+- recalcPlanSummary()
+- canCreateNextPlan()
+- getCurrentActivePlan()
+- getHistoryPlans()
+
+## 本地存储/数据库
+若先做前端版本：
+- 优先使用 localStorage / IndexedDB 模拟持久化
+
+若做全栈版本：
+- 前端：React / Vue / Next.js / Nuxt 均可
+- 后端：Node.js / Supabase / Convex / Firebase 均可
+- 数据表建议：
+  - plan_days
+  - task_items
+
+## 编码要求
+1. 所有业务判断不要写死在 UI 文案里
+2. 将核心规则提取为独立函数
+3. 界面层负责展示，业务层负责判断
+4. 日期处理要统一
+5. 禁止出现“虽然上一天没完成但仍可继续加下一天任务”的漏洞
