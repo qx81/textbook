@@ -1,0 +1,71 @@
+# Skill: Data Model for Task Notebook App
+
+请严格使用清晰、可扩展的数据结构，不要随意混乱命名。
+
+## 实体设计
+
+### 1. PlanDay
+表示某一天的事项计划
+
+字段建议：
+- id: string
+- targetDate: string // YYYY-MM-DD，表示“要执行事项的日期”
+- createdAt: string
+- updatedAt: string
+- status: "pending" | "finished"
+- totalCount: number
+- completedCount: number
+- failedCount: number
+- unprocessedCount: number
+- canCreateNext: boolean
+
+说明：
+- status = finished 表示该日期下所有事项都已被处理完成（全部打勾或打叉）
+- canCreateNext 也可以由程序动态计算，不一定必须持久化
+
+### 2. TaskItem
+表示某一天下面的一条事项
+
+字段建议：
+- id: string
+- planDayId: string
+- title: string
+- note: string
+- status: "todo" | "completed" | "failed"
+- createdAt: string
+- updatedAt: string
+- order: number
+
+说明：
+- todo：还未处理
+- completed：已完成（打勾）
+- failed：未完成（打叉）
+
+## 状态流转规则
+
+### TaskItem 状态流转
+- 初始状态：todo
+- todo -> completed
+- todo -> failed
+- completed -> todo（可选）
+- failed -> todo（可选）
+
+### PlanDay 状态流转
+- 当存在 todo 事项时，PlanDay.status 必须为 pending
+- 当该日全部事项均为 completed 或 failed 时，PlanDay.status 变为 finished
+
+## 关键计算规则
+对某个 PlanDay：
+- totalCount = 事项总数
+- completedCount = status 为 completed 的数量
+- failedCount = status 为 failed 的数量
+- unprocessedCount = status 为 todo 的数量
+
+判断是否允许创建下一天计划：
+- 仅当最近一个 PlanDay 的 unprocessedCount === 0 时才允许
+
+## 数据一致性要求
+1. 不允许出现同一天多个重复 PlanDay，除非产品明确允许
+2. 不允许在上一个计划日未闭环时创建新计划日
+3. 删除事项后要同步更新统计数据
+4. 更新事项状态后要同步更新 PlanDay 汇总状态
